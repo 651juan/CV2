@@ -1,6 +1,6 @@
 function source = ICP(source, target, type)
-if ndims == 2
-    type = 'all'
+if nargin == 2
+    type = 'all';
 end
 switch(type)
     case 'all'
@@ -16,15 +16,15 @@ switch(type)
 end
 
 
-R = eye(size(source,1));
-t = 0;
+R = {};
+t = {};
 RMSold = 0;
 RMS = 1;
 while RMS ~= RMSold
     fprintf('RMS %d and RMSold %d\n', RMS, RMSold);
     [match,RMSold] = getMatchesAndRMS(source,target);
 
-    [R,t] = getRAndT(source,target);
+    [R(end+1),t(end+1)] = getRAndT(source,target);
 
     source = R*source + t;
     
