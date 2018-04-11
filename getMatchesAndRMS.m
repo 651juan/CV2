@@ -1,4 +1,4 @@
-function [match,RMS] = getMatchesAndRMS(source,target)
+    function [match,RMS] = getMatchesAndRMS(source,target)
 noOfPoints = size(source,2);
 dimensions = size(source,1);
 match = zeros(1,noOfPoints);
@@ -10,7 +10,7 @@ for x = 1:noOfPoints
     end
     [value,index] = min(dist);
     match(x) = index;
-    minimumDist = value;
+    minimumDist(x) = value;
 end
 RMS = sqrt((1/noOfPoints) * sum(minimumDist));
 end
