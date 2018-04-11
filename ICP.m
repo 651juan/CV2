@@ -8,7 +8,9 @@ switch(varargin{1})
     case 'all'
         %Nothing
     case 'uniform'
-        source;
+        reducedby = length(source)/varargin{2}
+        predicted = source(:,1:reducedby:end);
+        target = target(:,1:reducedby:end);
     case 'random'
         indexes = randperm(length(source)-1,varargin{2});
         predicted = source(:,indexes)
