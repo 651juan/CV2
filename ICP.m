@@ -1,14 +1,18 @@
 function source = ICP(source, target, type)
-if ndims == 2
-    type = 'all'
-end
+
+%if ndims == 2
+%    type = 'all'
+%end
 switch(type)
     case 'all'
         %Nothing
     case 'uniform'
-        
+        source;
     case 'random'
-        
+        original_source = source
+        indexes = randperm(length(source)-1,length(source)/4);
+        source = source(:,indexes)
+        target = target(:,indexes)
     case 'informative'
         
     otherwise
@@ -30,5 +34,5 @@ while RMS ~= RMSold
     
     [match,RMS] = getMatchesAndRMS(source,target);
 end
-
+    source = R*original_source + t;
 end
