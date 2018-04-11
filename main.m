@@ -1,7 +1,7 @@
 load('/home/yiangos/UvA/CV2/assignment/Assignment 1 - v1.0.0/Assignment 1/Data/source.mat')
 load('/home/yiangos/UvA/CV2/assignment/Assignment 1 - v1.0.0/Assignment 1/Data/target.mat')
 
-adjusted = ICP(source,target,'random');
+adjusted = ICP(source,target,'random',1000);
 
 figure
 % scatter3(source(1,:),source(2,:),source(3,:),1,[1,0,0])

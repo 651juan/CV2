@@ -1,16 +1,16 @@
-function source = ICP(source, target, type)
+function source = ICP(source, target, varargin)
 
 if nargin == 2
     type = 'all';
 end
 predicted = source;
-switch(type)
+switch(varargin{1})
     case 'all'
         %Nothing
     case 'uniform'
         source;
     case 'random'
-        indexes = randperm(length(source)-1,length(source)/4);
+        indexes = randperm(length(source)-1,varargin{2});
         predicted = source(:,indexes)
         target = target(:,indexes)
     case 'informative'
