@@ -1,6 +1,6 @@
 function source = ICP(source, target, type)
-if ndims == 2
-    type = 'all'
+if nargin == 2
+    type = 'all';
 end
 switch(type)
     case 'all'
