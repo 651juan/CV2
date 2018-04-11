@@ -2,6 +2,7 @@ function source = ICP(source, target, type)
 if nargin == 2
     type = 'all';
 end
+predicted = source;
 switch(type)
     case 'all'
         %Nothing
@@ -16,19 +17,21 @@ switch(type)
 end
 
 
-R = eye(size(source,1));
-t = 0;
+R = {};
+t = {};
 RMSold = 0;
 RMS = 1;
 while RMS ~= RMSold
     fprintf('RMS %d and RMSold %d\n', RMS, RMSold);
-    [match,RMSold] = getMatchesAndRMS(source,target);
+    [match,RMSold] = getMatchesAndRMS(predicted,target);
 
-    [R,t] = getRAndT(source,target);
+    [R{end+1},t{end+1}] = getRAndT(predicted,target);
 
-    source = R*source + t;
+    predicted = R{end}*predicted + t{end};
     
-    [match,RMS] = getMatchesAndRMS(source,target);
+    [match,RMS] = getMatchesAndRMS(predicted,target);
 end
-
+for x = 1:size(R)
+   source =  R{x}*source + t{x};
+end
 end
