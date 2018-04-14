@@ -8,15 +8,16 @@ switch(varargin{1})
     case 'all'
         %Nothing
     case 'uniform'
-        reducedby = length(source)/varargin{2}
+        reducedby = length(source)/varargin{2};
         predicted = source(:,1:reducedby:end);
         target = target(:,1:reducedby:end);
     case 'random'
         indexes = randperm(length(source)-1,varargin{2});
-        predicted = source(:,indexes)
-        target = target(:,indexes)
+        predicted = source(:,indexes);
+        target = target(:,indexes);
     case 'informative'
-        
+        %% using normal space sampling.
+        target = get_normal_space_sample(source,varargin{3},varargin{2});
     otherwise
         %Nothing
 end
@@ -41,3 +42,4 @@ for x = 1:size(R)
 end
 
 end
+
