@@ -1,4 +1,4 @@
-function source = ICP(source, target, varargin)
+function [source pose]  = ICP(source, target, varargin)
 
 if nargin == 2
     type = 'all';
@@ -37,9 +37,14 @@ while RMS ~= RMSold
     
     [match,RMS] = getMatchesAndRMS(predicted,target);
 end
+R_new=1
+t_new=0
 for x = 1:size(R)
-   source =  R{x}*source + t{x};
+   R_new = R_new * R{x}
+   t_new = t_new + t{x}
 end
+source =  R_new*source + t_new;
+pose=[R_new t_new]
 
 end
 

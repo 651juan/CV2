@@ -1,4 +1,4 @@
-    function [match,RMS] = getMatchesAndRMS(source,target)
+function [match,RMS] = getMatchesAndRMS(source,target)
 noOfPoints = size(source,2);
 dimensions = size(source,1);
 match = zeros(1,noOfPoints);
