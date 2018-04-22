@@ -1,6 +1,11 @@
-function [R,t] = getRAndT(source,target)
+function [R,t] = getRAndT(source,target,weights_)
 
-weights = ones(1,size(source,2));
+if weights_ == 0
+	weights = ones(1,size(source,2));
+else
+	weights = weights_;
+end
+
 W = diag(weights);
 weightedS = weights .* source;
 weightedT = weights .* target;

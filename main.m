@@ -4,8 +4,8 @@ load('../Assignment 1 - v1.0.1/Assignment 1/Data/target.mat')
 % load('/home/yiangos/UvA/CV2/assignment/Assignment 1 - v1.0.1/Assignment 1/Data/data/0000000000.mat')
 % load('/home/yiangos/UvA/CV2/assignment/Assignment 1 - v1.0.1/Assignment 1/Data/data/')
 
-[adjusted pose] = ICP(source,target,'all');
-pose
+[adjusted, R, t, RMS] = ICP(source,target,0,0,'random',2000);
+
 figure
 scatter3(source(1,:),source(2,:),source(3,:),1,[1,0,0])
 hold on
