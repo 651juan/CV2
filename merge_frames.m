@@ -75,13 +75,13 @@ for i = 1:step:100-step
 		% 	pcd_merged = cloud_point_source';
 		% end
 		% Find camera pose
-		[result, R, t,RMS] = ICP(transpose(cloud_point_source),transpose(cloud_point_target),1,1,transpose(cloud_point_source_normal),transpose(cloud_point_target_normal),method,number_of_points);
+		[result, R, t,RMS] = ICP(transpose(cloud_point_source),transpose(cloud_point_target),0,0,transpose(cloud_point_source_normal),transpose(cloud_point_target_normal),method,number_of_points);
 
-		if RMS < 0.1
+		% if RMS < 0.1
 			%Accumulate R and t
 		
 		t_cum = R_cum * t + t_cum;
-    	R_cum = R_cum * R  ;
+    	R_cum = R_cum * R;
 
 		predicted =  R_cum * transpose(cloud_point_source)  + t_cum; 
 
@@ -89,7 +89,7 @@ for i = 1:step:100-step
     	
     	pcd_merged = cat(2, pcd_merged, predicted);
     	
-		end
+		% end
 		
 
 	elseif merging_strategy==2
@@ -104,7 +104,7 @@ for i = 1:step:100-step
 
 		% Find camera pose
 
-		[result, R, t,RMS] = ICP(pcd_merged,transpose(cloud_point_target),3,1,pcd_merged_normal,transpose(cloud_point_target_normal),method,number_of_points);
+		[result, R, t,RMS] = ICP(pcd_merged,transpose(cloud_point_target),1,2,pcd_merged_normal,transpose(cloud_point_target_normal),method,number_of_points);
 		
 		% if RMS < 0.1
 		pcd_merged  =  R * pcd_merged  + t;
@@ -117,15 +117,7 @@ for i = 1:step:100-step
 
     %Plot the pointclouds before and after
     if mod(i-1,10)==0
-    figure
-    if merging_strategy == 1
-    subplot(1,2,1);
-    scatter3(result(1,:), result(2,:), result(3,:),1,[1,0,0]);
-    hold on
-    scatter3(cloud_point_target(:,1), cloud_point_target(:,2), cloud_point_target(:,3),1,[0,0,1]);
-    hold off
-    subplot(1,2,2);
-    end      
+    figure  
     scatter3(pcd_merged(1,:), pcd_merged(2,:), pcd_merged(3,:),1);
     hold on
     if merging_strategy == 1
@@ -142,8 +134,8 @@ for i = 1:step:100-step
 	% end
 
 end
-figure;
-scatter3(pcd_merged(1,:), pcd_merged(2,:), pcd_merged(3,:),1);
+% figure;
+% scatter3(pcd_merged(1,:), pcd_merged(2,:), pcd_merged(3,:),1);
 %previous target is the new source
 	
 
@@ -172,7 +164,7 @@ scatter3(pcd_merged(1,:), pcd_merged(2,:), pcd_merged(3,:),1);
 %data.unpackRGBFloat
 
 figure;
-scatter3( pcd_merged(1,:), pcd_merged(2,:), pcd_merged(3,:),1,pcd_merged(1,:));
+fscatter3( pcd_merged(1,:), pcd_merged(2,:), pcd_merged(3,:),pcd_merged(1,:));
 xlabel('X');
 ylabel('Y');
 zlabel('Z');

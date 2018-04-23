@@ -20,7 +20,7 @@ elseif method == 3
 
  	std_ = std(distance);
  	mean_ = mean(distance);
- 	index = find(abs(distance - mean_) > std_ * 2);
+ 	index = find(abs(distance - mean_) > std_ * 2.5);
 
  	source(:,index) = [];
 	target(:,index) = [];

@@ -1,8 +1,8 @@
 % % load('../Assignment 1 - v1.0.1/Assignment 1/Data/source.mat')
 % % load('../Assignment 1 - v1.0.1/Assignment 1/Data/target.mat')
 Pcd_path = '../Assignment 1 - v1.0.1/Assignment 1/Data/data/';
-source = readPcd('../Assignment 1 - v1.0.1/Assignment 1/Data/data/0000000020.pcd');
-target = readPcd('../Assignment 1 - v1.0.1/Assignment 1/Data/data/0000000025.pcd');
+source = readPcd('../Assignment 1 - v1.0.1/Assignment 1/Data/data/0000000019.pcd');
+target = readPcd('../Assignment 1 - v1.0.1/Assignment 1/Data/data/0000000021.pcd');
 
 
 s=xml2struct('../Assignment 1 - v1.0.1/Assignment 1/Data/data/0000000010_camera.xml');
@@ -21,7 +21,7 @@ source = source(source(:,3) < 2, :)';
 target = target(target(:,3) < 2, :)';
 
 
-[adjusted, R,t] = ICP(source(1:3,:),target(1:3,:),4,1,'uniform',4000);
+[adjusted, R,t] = ICP(source(1:3,:),target(1:3,:),1,1,source(1:3,:),source(1:3,:),'uniform',4000);
 
 figure
 % scatter3(source(1,:),source(2,:),source(3,:),1,[1,0,0])

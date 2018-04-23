@@ -14,6 +14,7 @@ switch(varargin{1})
 
         reducedby = length(target)/varargin{2};
         target = target(:,1:reducedby:end);
+        reducedby = length(target)/varargin{2};
         normal_target = normal_target(:,1:reducedby:end);
     case 'random'
         % indexes = randperm(length(source)-1,varargin{2});
@@ -59,13 +60,19 @@ while RMS ~= RMSold
 
     [match,dist,RMSold] = getMatchesAndRMS(predicted,target);
     target = target(:, match);
+    if length(target) ~= length(normal_target)
     normal_target = normal_target(:, match);
+    end
 
 
     % Rejecting pair mathods
     if rejecting ~= 0
         [predicted_RT,target_RT,index]  = rejecting_pairs(predicted,target,normal_source,normal_target,dist,rejecting);
         dist(index)=[];
+        normal_target_RT = normal_target
+        normal_target_RT(:,index)=[]
+        normal_source_RT = normal_source
+        normal_source_RT(:,index)=[]
     else
         predicted_RT = predicted;
         target_RT = target;
@@ -74,7 +81,9 @@ while RMS ~= RMSold
 
     % Weighting pair methods
     if weighting_tech == 1
-        weight_vector = weighting_of_pairs(dist,'max');
+        weight_vector = weighting_of_pairs(dist,'max',normal_source,normal_target);
+    elseif weighting_tech == 2
+        weight_vector =  weighting_of_pairs(dist,'comp',normal_source,normal_target);
     end
 
     [R{end+1},t{end+1}] = getRAndT(predicted_RT,target_RT,weight_vector);
