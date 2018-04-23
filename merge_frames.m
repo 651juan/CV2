@@ -47,21 +47,26 @@ for i = 1:step:100-step
 	% t_cam = reshape(double(str2num(s.Children(6).Children(8).Children.Data)),3,[]);
 
 	% Load target cloud point
-	% if change==1
-	cloud_point_source = readPcd(strcat(Pcd_path,files{i}));
-	cloud_point_source = remove_background(cloud_point_source);
+	
+	cloud_point_source = readPcd(strcat(Pcd_path,files{i+step}));
+	[cloud_point_source,index] = remove_background(cloud_point_source);
 	cloud_point_source = cloud_point_source(:,1:3);
-	% end
-	% change = 0;
+
+	cloud_point_source_normal = readPcd(strcat(Pcd_path,normal_files{i+step}));
+	cloud_point_source_normal = cloud_point_source_normal(index,1:3);
+	
 	% s=xml2struct(strcat(Pcd_path,xml_files{i}));
 	% R_cam = reshape(double(str2num(strrep(s.Children(4).Children(8).Children.Data,sprintf('\n'),''))),3,[]);
 	% t_cam = reshape(double(str2num(s.Children(6).Children(8).Children.Data)),3,[]);
 	% % Load target cloud point
-
-	cloud_point_target = readPcd(strcat(Pcd_path,files{i+step}));
-	cloud_point_target = remove_background(cloud_point_target);
+	
+	cloud_point_target = readPcd(strcat(Pcd_path,files{i}));
+	[cloud_point_target,index] = remove_background(cloud_point_target);
 	cloud_point_target = cloud_point_target(:,1:3);
 
+	cloud_point_target_normal = readPcd(strcat(Pcd_path,normal_files{i}));
+	cloud_point_target_normal = cloud_point_target_normal(index,1:3);
+	
 	% size(cloud_point_source)
 	% cloud_point_target = cloud_point_target(1:length(cloud_point_source))''
 	if merging_strategy==1
@@ -70,69 +75,75 @@ for i = 1:step:100-step
 		% 	pcd_merged = cloud_point_source';
 		% end
 		% Find camera pose
-		[result, R, t,RMS] = ICP(transpose(cloud_point_source),transpose(cloud_point_target),1,1,method,number_of_points);
+		[result, R, t,RMS] = ICP(transpose(cloud_point_source),transpose(cloud_point_target),1,1,transpose(cloud_point_source_normal),transpose(cloud_point_target_normal),method,number_of_points);
 
-		% if RMS < 0.1
+		if RMS < 0.1
 			%Accumulate R and t
-	
-		predicted =  R_cum * result  + t_cum; 
-
+		
 		t_cum = R_cum * t + t_cum;
     	R_cum = R_cum * R  ;
+
+		predicted =  R_cum * transpose(cloud_point_source)  + t_cum; 
 
     	% merge new point cloud 
     	
     	pcd_merged = cat(2, pcd_merged, predicted);
-    	% change=1;
-		% end
+    	
+		end
 		
 
 	elseif merging_strategy==2
 
 		if length(pcd_merged) == 0
 			pcd_merged = cloud_point_source';
+			pcd_merged_normal = cloud_point_source_normal';
+		else
+			pcd_merged_normal = cat(2, pcd_merged_normal, cloud_point_source_normal');
 		end
 
 
 		% Find camera pose
 
-		[result, R, t,RMS] = ICP(pcd_merged,transpose(cloud_point_target),1,1,method,number_of_points);
+		[result, R, t,RMS] = ICP(pcd_merged,transpose(cloud_point_target),3,1,pcd_merged_normal,transpose(cloud_point_target_normal),method,number_of_points);
 		
-		if RMS < 0.1
-		predicted  =  R * pcd_merged  + t;
+		% if RMS < 0.1
+		pcd_merged  =  R * pcd_merged  + t;
 		%transform the merged pointclouds
 		
 		% if RMS < 0.05
-    	pcd_merged = cat(2, pcd_merged, predicted);
-		end
+    	pcd_merged = cat(2, pcd_merged, transpose(cloud_point_target));
+		% end
 	end
 
     %Plot the pointclouds before and after
-    % if mod(i-1,10)==0
+    if mod(i-1,10)==0
     figure
+    if merging_strategy == 1
     subplot(1,2,1);
     scatter3(result(1,:), result(2,:), result(3,:),1,[1,0,0]);
     hold on
     scatter3(cloud_point_target(:,1), cloud_point_target(:,2), cloud_point_target(:,3),1,[0,0,1]);
     hold off
-    subplot(1,2,2);      
+    subplot(1,2,2);
+    end      
     scatter3(pcd_merged(1,:), pcd_merged(2,:), pcd_merged(3,:),1);
-    if merging_strategy == 1
     hold on
-    scatter3(result(1,:), result(2,:), result(3,:),1);
+    if merging_strategy == 1
+    scatter3(predicted(1,:), predicted(2,:), predicted(3,:),1);
+	else
+	scatter3(cloud_point_target(:,1), cloud_point_target(:,2), cloud_point_target(:,3),1);
 	end
-    hold off
+	hold off
     drawnow;
-	% end
+	end
  %    if RMS < 0.5
    
  %    cloud_point_source = cloud_point_target;
 	% end
 
 end
-figure
+figure;
 scatter3(pcd_merged(1,:), pcd_merged(2,:), pcd_merged(3,:),1);
-
 %previous target is the new source
 	
 
@@ -160,13 +171,19 @@ scatter3(pcd_merged(1,:), pcd_merged(2,:), pcd_merged(3,:),1);
 
 %data.unpackRGBFloat
 
+figure;
+scatter3( pcd_merged(1,:), pcd_merged(2,:), pcd_merged(3,:),1,pcd_merged(1,:));
+xlabel('X');
+ylabel('Y');
+zlabel('Z');
 
-function [new_pointCloud] = remove_background(cloud_point)
+function [new_pointCloud,index] = remove_background(cloud_point)
 	%find camera position in XYZ system
 	%C = -(inv(R))*t;
 	%remove all of the points that are in the background (2 meters away)
     % new_pointCloud = cloud_point(sqrt((cloud_point(:,1)-C(1)).^2+(cloud_point(:,2)-C(2)).^2+(cloud_point(:,3)-C(3)).^2) < 2, :);
-    new_pointCloud = cloud_point(cloud_point(:,3) < 2, :);
+    index = find(cloud_point(:,3) < 2);
+    new_pointCloud = cloud_point(index,:);
 end
 
 

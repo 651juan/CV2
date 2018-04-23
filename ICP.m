@@ -1,4 +1,4 @@
-function [source,R_new,t_new,RMS]  = ICP(source, target,rejecting,weighting_tech, varargin)
+function [source,R_new,t_new,RMS]  = ICP(source, target,rejecting,weighting_tech,normal_source,normal_target, varargin)
 
 if nargin == 2
     type = 'all';
@@ -10,14 +10,19 @@ switch(varargin{1})
     case 'uniform'
         reducedby = length(source)/varargin{2};
         predicted = source(:,1:reducedby:end);
+        normal_source = normal_source(:,1:reducedby:end);
+
         reducedby = length(target)/varargin{2};
         target = target(:,1:reducedby:end);
+        normal_target = normal_target(:,1:reducedby:end);
     case 'random'
         % indexes = randperm(length(source)-1,varargin{2});
         % predicted = source(:,indexes);
         % indexes = randperm(length(target)-1,varargin{2});
         % target = target(:,indexes);
-        original_target = target 
+        original_normal_source = normal_source;
+        original_normal_target = normal_target;
+        original_target = target ;
     case 'informative'
         %% using normal space sampling.
         target = get_normal_space_sample(source,varargin{3},varargin{2});
@@ -40,8 +45,11 @@ while RMS ~= RMSold
 
         indexes = randperm(length(source)-1,varargin{2});
         predicted = source(:,indexes);
+        normal_source = original_normal_source(:,indexes);
+
         indexes = randperm(length(original_target)-1,varargin{2});
         target = original_target(:,indexes);
+        normal_target = original_normal_target(:,indexes);
 
         for x = 1:size(R)
             predicted = R{x} * predicted + t{x};
@@ -51,12 +59,12 @@ while RMS ~= RMSold
 
     [match,dist,RMSold] = getMatchesAndRMS(predicted,target);
     target = target(:, match);
-
+    normal_target = normal_target(:, match);
 
 
     % Rejecting pair mathods
     if rejecting ~= 0
-        [predicted_RT,target_RT,index]  = rejecting_pairs(predicted,target, dist,rejecting);
+        [predicted_RT,target_RT,index]  = rejecting_pairs(predicted,target,normal_source,normal_target,dist,rejecting);
         dist(index)=[];
     else
         predicted_RT = predicted;
@@ -81,11 +89,11 @@ while RMS ~= RMSold
         break
     end
 end
-R_new = eye(3)
-t_new=0
-for x = 1:size(R)
-   t_new = t_new + R_new * t{x} 
-   R_new = R{x} * R_new 
+R_new = eye(3);
+t_new=0;
+for x = 1:size(R,2)
+   t_new = t_new + R_new * t{x} ;
+   R_new = R{x} * R_new ;
 end
 
 source =  R_new * source + t_new;

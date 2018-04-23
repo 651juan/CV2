@@ -21,7 +21,7 @@ source = source(source(:,3) < 2, :)';
 target = target(target(:,3) < 2, :)';
 
 
-[adjusted, R,t] = ICP(source(1:3,:),target(1:3,:),1,0,'uniform',10000);
+[adjusted, R,t] = ICP(source(1:3,:),target(1:3,:),4,1,'uniform',4000);
 
 figure
 % scatter3(source(1,:),source(2,:),source(3,:),1,[1,0,0])
