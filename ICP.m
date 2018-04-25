@@ -1,5 +1,7 @@
-function [source,R_new,t_new,RMS]  = ICP(source, target,rejecting,weighting_tech,normal_source,normal_target, varargin)
-
+function [source,R,t,RMS]  = ICP(source, target,rejecting,weighting_tech,normal_source,normal_target, varargin)
+original_normal_source = normal_source;
+original_normal_target = normal_target;
+original_target = target ;
 if nargin == 2
     type = 'all';
 end
@@ -11,6 +13,7 @@ switch(varargin{1})
         reducedby = length(source)/varargin{2};
         predicted = source(:,1:reducedby:end);
         normal_source = normal_source(:,1:reducedby:end);
+
 
         reducedby = length(target)/varargin{2};
         target = target(:,1:reducedby:end);
@@ -38,6 +41,9 @@ RMSold = 0;
 RMS = 1;
 max_iter=0;
 weight_vector=0;
+predicted_new = predicted;
+size(predicted_new)
+
 while RMS ~= RMSold
     max_iter=max_iter+1;
     fprintf('RMS %d and RMSold %d\n', RMS, RMSold);
@@ -51,61 +57,54 @@ while RMS ~= RMSold
         indexes = randperm(length(original_target)-1,varargin{2});
         target = original_target(:,indexes);
         normal_target = original_normal_target(:,indexes);
-
-        for x = 1:size(R)
-            predicted = R{x} * predicted + t{x};
-        end 
-
+        predicted_new = R{end} * predicted + t{end};
     end
 
-    [match,dist,RMSold] = getMatchesAndRMS(predicted,target);
-    target = target(:, match);
-    if length(target) ~= length(normal_target)
+    [match,dist,RMSold] = getMatchesAndRMS(predicted_new,target);
+    target_RT = target(:, match);
+    if length(target) == length(normal_target)
     normal_target = normal_target(:, match);
+
     end
 
 
     % Rejecting pair mathods
     if rejecting ~= 0
-        [predicted_RT,target_RT,index]  = rejecting_pairs(predicted,target,normal_source,normal_target,dist,rejecting);
+        [predicted_RT,target_RT,index]  = rejecting_pairs(predicted,target_RT,normal_source,normal_target,dist,rejecting);
         dist(index)=[];
-        normal_target_RT = normal_target
-        normal_target_RT(:,index)=[]
-        normal_source_RT = normal_source
-        normal_source_RT(:,index)=[]
+        normal_target_RT = normal_target;
+        normal_target_RT(:,index)=[];
+        normal_source_RT = normal_source;
+        normal_source_RT(:,index)=[];
     else
         predicted_RT = predicted;
-        target_RT = target;
+        % target_RT = target;
     end
 
 
     % Weighting pair methods
     if weighting_tech == 1
-        weight_vector = weighting_of_pairs(dist,'max',normal_source,normal_target);
+        weight_vector = weighting_of_pairs(dist,'max',normal_source_RT,normal_target_RT);
     elseif weighting_tech == 2
-        weight_vector =  weighting_of_pairs(dist,'comp',normal_source,normal_target);
+        weight_vector =  weighting_of_pairs(dist,'comp',normal_source_RT,normal_target_RT);
     end
 
     [R{end+1},t{end+1}] = getRAndT(predicted_RT,target_RT,weight_vector);
 
-    predicted = R{end} * predicted + t{end};
+    predicted_new = R{end} * predicted + t{end};
     %predicted_RT = R{end} * predicted_RT + t{end};
 
-    [match,dist,RMS] = getMatchesAndRMS(predicted,target);
+    [match,dist,RMS] = getMatchesAndRMS(predicted_new,target);
     % sandom sampling 
     
     if max_iter==100
         break
     end
 end
-R_new = eye(3);
-t_new=0;
-for x = 1:size(R,2)
-   t_new = t_new + R_new * t{x} ;
-   R_new = R{x} * R_new ;
-end
 
-source =  R_new * source + t_new;
+R = R{end};
+t = t{end};
+source =  R * source + t;
 
 end
 

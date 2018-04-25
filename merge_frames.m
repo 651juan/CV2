@@ -33,8 +33,8 @@ pcd_merged = zeros(3,0);
 % cloud_point_source = remove_background(cloud_point_source,R,t);
 % cloud_point_source = cloud_point_source(:,1:3);
 
-R_cum = eye(3);
-t_cum = zeros(3, 1);
+R_cmb = eye(3);
+t_cmb = zeros(3, 1);
 change = 1;
 for i = 1:step:100-step
 	i
@@ -75,44 +75,56 @@ for i = 1:step:100-step
 		% 	pcd_merged = cloud_point_source';
 		% end
 		% Find camera pose
-		[result, R, t,RMS] = ICP(transpose(cloud_point_source),transpose(cloud_point_target),0,0,transpose(cloud_point_source_normal),transpose(cloud_point_target_normal),method,number_of_points);
+		% center = mean(cloud_point_source);
+		% distanceMatrix = pdist2(cloud_point_source,center);
+		
+		% std_ = std(distanceMatrix);
+ 	% 	index = find(abs(distanceMatrix - mean(distanceMatrix)) > std_ * 2);
+ 	% 	cloud_point_source(index,:)=[];
+ 		
+		[result, R, t,RMS] = ICP(transpose(cloud_point_source),transpose(cloud_point_target),3,1,transpose(cloud_point_source_normal),transpose(cloud_point_target_normal),method,number_of_points);
 
-		% if RMS < 0.1
+		% if RMS < 0.9
 			%Accumulate R and t
 		
-		t_cum = R_cum * t + t_cum;
-    	R_cum = R_cum * R;
+		t_cmb = R_cmb * t + t_cmb;
+    	R_cmb = R_cmb * R;
 
-		predicted =  R_cum * transpose(cloud_point_source)  + t_cum; 
-
+		predicted =  R_cmb * transpose(cloud_point_source)  + t_cmb; 
     	% merge new point cloud 
-    	
     	pcd_merged = cat(2, pcd_merged, predicted);
-    	
+
 		% end
 		
 
 	elseif merging_strategy==2
 
 		if length(pcd_merged) == 0
-			pcd_merged = cloud_point_source';
-			pcd_merged_normal = cloud_point_source_normal';
+			pcd_merged = cloud_point_target';
+			pcd_merged_normal = cloud_point_target_normal';
 		else
-			pcd_merged_normal = cat(2, pcd_merged_normal, cloud_point_source_normal');
+			pcd_merged_normal = cat(2, pcd_merged_normal, cloud_point_target_normal');
 		end
 
 
 		% Find camera pose
-
-		[result, R, t,RMS] = ICP(pcd_merged,transpose(cloud_point_target),1,2,pcd_merged_normal,transpose(cloud_point_target_normal),method,number_of_points);
+		% if i > 10
+		% [result, R, t,RMS] = ICP(transpose(cloud_point_source),pcd_merged(:,0.8*size(pcd_merged,2):end),3,0,pcd_merged_normal,transpose(cloud_point_source),method,number_of_points);
+		% else
+		[result, R, t,RMS] = ICP(transpose(cloud_point_source),pcd_merged,3,1,pcd_merged_normal,transpose(cloud_point_source),method,number_of_points);
+		% end
 		
 		% if RMS < 0.1
-		pcd_merged  =  R * pcd_merged  + t;
+		% result = R * transpose(cloud_point_source) + t
+		pcd_merged  =  (pcd_merged - t)' / R';
+		
 		%transform the merged pointclouds
 		
 		% if RMS < 0.05
-    	pcd_merged = cat(2, pcd_merged, transpose(cloud_point_target));
+    	pcd_merged = cat(2, pcd_merged',transpose(cloud_point_source));
+    	% pcd_merged = cat(2, pcd_merged,result);
 		% end
+
 	end
 
     %Plot the pointclouds before and after
@@ -123,7 +135,7 @@ for i = 1:step:100-step
     if merging_strategy == 1
     scatter3(predicted(1,:), predicted(2,:), predicted(3,:),1);
 	else
-	scatter3(cloud_point_target(:,1), cloud_point_target(:,2), cloud_point_target(:,3),1);
+	scatter3(cloud_point_source(:,1), cloud_point_source(:,2), cloud_point_source(:,3),1);
 	end
 	hold off
     drawnow;

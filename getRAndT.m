@@ -10,8 +10,8 @@ W = diag(weights);
 weightedS = weights .* source;
 weightedT = weights .* target;
 
-centS = weightedS/weights;
-centT = weightedT/weights;
+centS = sum(weightedS,2) / sum(weights);
+centT = sum(weightedT,2) / sum(weights);
 
 X = zeros(size(source));
 Y = zeros(size(source));
@@ -28,6 +28,7 @@ Z = eye(size(V));
 last = det(V*U');
 Z(end,end) = last;
 R = V * Z * U';
-t = centT - R*centS;
+% R = R';
+t = centT - R * centS;
 end
 
