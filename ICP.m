@@ -88,9 +88,11 @@ while RMS ~= RMSold
 
     % Weighting pair methods
     if weighting_tech == 1
-        weight_vector = weighting_of_pairs(dist,'max',normal_source_RT,normal_target_RT);
+        weight_vector = weighting_of_pairs(dist,'max', predicted_RT, normal_source_RT,normal_target_RT);
     elseif weighting_tech == 2
-        weight_vector =  weighting_of_pairs(dist,'comp',normal_source_RT,normal_target_RT);
+        weight_vector = weighting_of_pairs(dist,'comp', predicted_RT, normal_source_RT,normal_target_RT);
+    elseif weighting_tech == 3
+        weight_vector = weighting_of_pairs(dist,'own', predicted_RT, normal_source_RT,normal_target_RT);
     end
 
     [R{end+1},t{end+1}] = getRAndT(predicted_RT,target_RT,weight_vector);
