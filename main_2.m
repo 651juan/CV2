@@ -4,15 +4,6 @@ Pcd_path = '../Assignment 1 - v1.0.1/Assignment 1/Data/data/';
 source = readPcd('../Assignment 1 - v1.0.1/Assignment 1/Data/data/0000000019.pcd');
 target = readPcd('../Assignment 1 - v1.0.1/Assignment 1/Data/data/0000000021.pcd');
 
-
-s=xml2struct('../Assignment 1 - v1.0.1/Assignment 1/Data/data/0000000010_camera.xml');
-R_cam = reshape(double(str2num(strrep(s.Children(4).Children(8).Children.Data,sprintf('\n'),''))),3,[]);
-t_cam = reshape(double(str2num(s.Children(6).Children(8).Children.Data)),3,[]);
-
-s=xml2struct('../Assignment 1 - v1.0.1/Assignment 1/Data/data/0000000011_camera.xml');
-R_cam2 = reshape(double(str2num(strrep(s.Children(4).Children(8).Children.Data,sprintf('\n'),''))),3,[]);
-t_cam2 = reshape(double(str2num(s.Children(6).Children(8).Children.Data)),3,[]);
-% size(source)
 source = source(:,1:3);
 target = target(:,1:3);
 
@@ -20,8 +11,14 @@ target = target(:,1:3);
 source = source(source(:,3) < 2, :)';
 target = target(target(:,3) < 2, :)';
 
+cloud_point_source_normal = readPcd(strcat(Pcd_path,'0000000019_normal.pcd'));
+cloud_point_target_normal = readPcd(strcat(Pcd_path,'0000000021_normal.pcd'));
 
-[adjusted, R,t] = ICP(source(1:3,:),target(1:3,:),1,1,source(1:3,:),source(1:3,:),'uniform',4000);
+cloud_point_source_normal = cloud_point_source_normal(cloud_point_source_normal(:,3) < 2, :);
+cloud_point_target_normal = cloud_point_target_normal(cloud_point_target_normal(:,3) < 2, :);
+
+
+[adjusted, R,t] = ICP(source(1:3,:),target(1:3,:),1,1,cloud_point_source_normal(:,1:3),cloud_point_target_normal(:,1:3),'uniform',3000);
 
 figure
 % scatter3(source(1,:),source(2,:),source(3,:),1,[1,0,0])

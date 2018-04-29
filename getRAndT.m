@@ -28,7 +28,6 @@ Z = eye(size(V));
 last = det(V*U');
 Z(end,end) = last;
 R = V * Z * U';
-% R = R';
 t = centT - R * centS;
 end
 

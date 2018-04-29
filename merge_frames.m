@@ -24,21 +24,20 @@ end
 
 pcd_merged = zeros(3,0);
 
-% s = xml2struct( '../Assignment 1 - v1.0.1/Assignment 1/Data/data/0000000000_camera.xml');
-% %Intristic = double(str2num(s.Children(2).Children(8).Children.Data))
-% R = reshape(double(str2num(strrep(s.Children(4).Children(8).Children.Data,sprintf('\n'),''))),3,[]);
-% t = reshape(double(str2num(s.Children(6).Children(8).Children.Data)),3,[]);
+%s = xml2struct( '../Assignment 1 - v1.0.1/Assignment 1/Data/data/0000000000_camera.xml');
+%Intristic = double(str2num(s.Children(2).Children(8).Children.Data))
+%R = reshape(double(str2num(strrep(s.Children(4).Children(8).Children.Data,sprintf('\n'),''))),3,[]);
+%t = reshape(double(str2num(s.Children(6).Children(8).Children.Data)),3,[]);
 
-% cloud_point_source = readPcd(strcat(Pcd_path,Pcd_name1));
-% cloud_point_source = remove_background(cloud_point_source,R,t);
-% cloud_point_source = cloud_point_source(:,1:3);
+%cloud_point_source = readPcd(strcat(Pcd_path,Pcd_name1));
+%cloud_point_source = remove_background(cloud_point_source,R,t);
+%cloud_point_source = cloud_point_source(:,1:3);
 
 R_cmb = eye(3);
 t_cmb = zeros(3, 1);
 change = 1;
-for i = 1:step:100-step
-	i
-	
+indexes_plot = []
+for i = 1:step:100-step	
 	% if i == 10
 	% 	break
 	% % end
@@ -84,15 +83,12 @@ for i = 1:step:100-step
  		
 		[result, R, t,RMS] = ICP(transpose(cloud_point_source),transpose(cloud_point_target),3,1,transpose(cloud_point_source_normal),transpose(cloud_point_target_normal),method,number_of_points);
 
-		% if RMS < 0.9
-			%Accumulate R and t
-		
 		t_cmb = R_cmb * t + t_cmb;
     	R_cmb = R_cmb * R;
 
 		predicted =  R_cmb * transpose(cloud_point_source)  + t_cmb; 
     	% merge new point cloud 
-    	pcd_merged = cat(2, pcd_merged, predicted);
+    	pcd_merged = [pcd_merged  predicted];
 
 		% end
 		
@@ -113,7 +109,6 @@ for i = 1:step:100-step
 		% else
 		[result, R, t,RMS] = ICP(transpose(cloud_point_source),pcd_merged,3,1,pcd_merged_normal,transpose(cloud_point_source),method,number_of_points);
 		% end
-		
 		% if RMS < 0.1
 		% result = R * transpose(cloud_point_source) + t
 		pcd_merged  =  (pcd_merged - t)' / R';
@@ -121,7 +116,7 @@ for i = 1:step:100-step
 		%transform the merged pointclouds
 		
 		% if RMS < 0.05
-    	pcd_merged = cat(2, pcd_merged',transpose(cloud_point_source));
+    	pcd_merged = [pcd_merged' transpose(cloud_point_source)];
     	% pcd_merged = cat(2, pcd_merged,result);
 		% end
 
@@ -140,7 +135,17 @@ for i = 1:step:100-step
 	hold off
     drawnow;
 	end
- %    if RMS < 0.5
+
+    if merging_strategy == 1
+    	% size(predicted,2)
+    	new_index = ones(size(predicted,2),1);
+    	new_index = new_index .* i;
+    	indexes_plot = [indexes_plot ; new_index ];
+    else
+    	new_index = ones(size(cloud_point_source,1),1);
+    	new_index = new_index .* i;
+    	indexes_plot = [indexes_plot ; new_index ];
+    end
    
  %    cloud_point_source = cloud_point_target;
 	% end
@@ -150,7 +155,6 @@ end
 % scatter3(pcd_merged(1,:), pcd_merged(2,:), pcd_merged(3,:),1);
 %previous target is the new source
 	
-
 %X = u*Z/f;  
 %Y = v*Z/f,  
 %[525.  0. 320. ; 0. 525. 240. ; 0. 0. 1] *
@@ -176,7 +180,7 @@ end
 %data.unpackRGBFloat
 
 figure;
-fscatter3( pcd_merged(1,:), pcd_merged(2,:), pcd_merged(3,:),pcd_merged(1,:));
+fscatter3( pcd_merged(1,:), pcd_merged(2,:), pcd_merged(3,:),indexes_plot);
 xlabel('X');
 ylabel('Y');
 zlabel('Z');

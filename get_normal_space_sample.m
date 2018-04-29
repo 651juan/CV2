@@ -1,6 +1,9 @@
 function sample = get_normal_space_sample(source, normals, limit) 
     angels = [];
+    source = source';
+    
     for i = 1:size(normals,1)
+
          if (isnan(normals(i,1)))
              angels(i) = NaN;
          else             
@@ -10,6 +13,7 @@ function sample = get_normal_space_sample(source, normals, limit)
          end
     end
     [N,edges,bin] = histcounts(angels);
+    
     sample = [];
     i = 0;
     while size(sample,1) ~= limit
@@ -21,4 +25,5 @@ function sample = get_normal_space_sample(source, normals, limit)
         end
         i = i+1;
     end
+
 end

@@ -29,7 +29,8 @@ switch(varargin{1})
         original_target = target ;
     case 'informative'
         %% using normal space sampling.
-        target = get_normal_space_sample(source,varargin{3},varargin{2});
+        predicted = get_normal_space_sample(source,normal_source,varargin{2})';
+        target = get_normal_space_sample(target,normal_target,varargin{2})';
     otherwise
         %Nothing
 end
@@ -42,7 +43,6 @@ RMS = 1;
 max_iter=0;
 weight_vector=0;
 predicted_new = predicted;
-size(predicted_new)
 
 while RMS ~= RMSold
     max_iter=max_iter+1;
@@ -73,9 +73,13 @@ while RMS ~= RMSold
         [predicted_RT,target_RT,index]  = rejecting_pairs(predicted,target_RT,normal_source,normal_target,dist,rejecting);
         dist(index)=[];
         normal_target_RT = normal_target;
-        normal_target_RT(:,index)=[];
         normal_source_RT = normal_source;
+        if weighting_tech == 2
+        
+        normal_target_RT(:,index)=[];
+        
         normal_source_RT(:,index)=[];
+        end
     else
         predicted_RT = predicted;
         % target_RT = target;
