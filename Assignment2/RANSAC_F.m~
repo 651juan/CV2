@@ -1,0 +1,17 @@
+function [F] = RANSAC_F(image1,image2)
+    for iter = 1:100
+        [f1,f2,matches,scores] = keypoint_matching(image1,image2);
+
+        selected_points = randperm(size(matches,2),8);
+
+        first_image_points = f1(:,matches(1,:));
+        second_image_points = f2(:,matches(2,:));
+        
+        candidate_F = eight_point(first_image_points, second_image_points,1);
+        
+        d = sampson_distance(first_image_points, second_image_points, candidate_F);
+        
+        inliers = abs(d) >
+    end
+end
+

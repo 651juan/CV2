@@ -6,7 +6,9 @@ image1 = imread(image1_path);
 image2 = imread(image2_path);
 
 %% RANSAC
-[best_fit first_image_points, second_image_points] = RANSAC(image1_path,image2_path,3,0);
+%[best_fit first_image_points, second_image_points] = RANSAC(image1_path,image2_path,3,0);
 
 %% Eight Point Algorithm
-F = eight_point(first_image_points, second_image_points, 1);
+%F = eight_point(first_image_points, second_image_points, 1);
+
+RANSAC_F(image1_path,image2_path);
