@@ -1,0 +1,9 @@
+function [normalised_points] = normalise_points(points)
+    x = points(1,:);
+    y = points(2,:);
+    
+    mx = sum(x) / size(x,2);
+    my = sum(y) / size(y,2);
+    d  = 
+end
+
