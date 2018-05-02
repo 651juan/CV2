@@ -1,4 +1,4 @@
-function [normalised_points] = normalise_points(points)
+function [T, points] = get_normalise_matrix(points)
     points = points(1:2,:);
     points(3,:) = 1;
     
@@ -9,6 +9,6 @@ function [normalised_points] = normalise_points(points)
     my = sum(y) / size(y,2);
     d  = sum(sqrt(((x-mx).^2) + ((y-my).^2))) / size(x,2);
     T = [sqrt(2)/d, 0, -mx*(sqrt(2)/d); 0, sqrt(2)/d, -my*(sqrt(2)/d); 0, 0, 1];
-    normalised_points = T*points;
+    points = T*points;
 end
 

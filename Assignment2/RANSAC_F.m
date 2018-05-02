@@ -9,7 +9,8 @@ function [F] = RANSAC_F(image1,image2)
         
         d = sampson_distance(first_image_points, second_image_points, candidate_F);
         
-        inliers = abs(d) < 1.25;
+        inliers = sum(abs(d) < 1.25);
+        disp(inliers)
     end
 end
 
