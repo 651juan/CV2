@@ -15,9 +15,11 @@ end
 F = V(:,9);
 F = reshape(F,3,3);
 
+
 [Uf,Df,Vf] = svd(F);
 Df(3,3) = 0;
 F = Uf * Df * Vf';
+
 
 end
 
