@@ -6,13 +6,9 @@ image1 = imread(image1_path);
 image2 = imread(image2_path);
 % /home/yiangos/UvA/CV2/assignment/CV2/Assignment2/Data/House/House
 %% RANSAC
-[best_fit first_image_points, second_image_points] = RANSAC(image1_path,image2_path,3,1);
+%[best_fit first_image_points, second_image_points] = RANSAC(image1_path,image2_path,3,0);
 
 %% Eight Point Algorithm
-A = zeros(size(first_image_points,2), 9);
+%F = eight_point(first_image_points, second_image_points, 1);
 
-for i = 1:size(first_image_points,2)
-    A(i,:) = [first_image_points(1,i)*second_image_points(1,i), first_image_points(1,i)*second_image_points(2,i), first_image_points(1,i), first_image_points(2,i)*second_image_points(1,i), first_image_points(2,i)*second_image_points(2,i), first_image_points(2,i), second_image_points(1,i), second_image_points(2,i), 1];    
-end
-
-
+RANSAC_F(image1_path,image2_path);
