@@ -1,9 +1,9 @@
-function image1 = main(F_method,plot)
+function F = generate_F(F_method,plot)
 
 %% Read images
 imagefiles = dir('/home/yiangos/UvA/CV2/assignment/CV2/Assignment2/Data/House/House/*.png');  
-image1_path = strcat(imagefiles(1).folder,'/',imagefiles(1).name);
-image2_path = strcat(imagefiles(1).folder,'/',imagefiles(30).name);
+image1_path = strcat(imagefiles(1).folder,'/',imagefiles(5).name);
+image2_path = strcat(imagefiles(1).folder,'/',imagefiles(6).name);
 image1 = imread(image1_path);
 image2 = imread(image2_path);
 
@@ -25,9 +25,9 @@ if F_method == 1 | F_method == 2
 	else
 		F = eight_point(first_image_points, second_image_points, 1);
 	end
-	
+
 elseif F_method == 3
-	[F,first_image_points, second_image_points] = RANSAC_F(image1_path,image2_path)
+	[F,first_image_points, second_image_points] = RANSAC_F(image1_path,image2_path);
 end
 		
 

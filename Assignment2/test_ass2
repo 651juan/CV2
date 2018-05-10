@@ -1,0 +1,37 @@
+import os
+import csv
+from sklearn.model_selection import train_test_split
+from keras.models import Sequential, Model
+from keras.layers import Dense, Dropout, Input, Embedding, LSTM, Flatten
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import QuantileTransformer
+from sklearn.preprocessing import MaxAbsScaler
+from sklearn.preprocessing import RobustScaler
+from matplotlib import pyplot
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import KFold
+from sklearn.metrics import mean_absolute_error
+import sklearn.linear_model as linear_model
+from sklearn.svm import SVR
+import pickle
+import keras
+import pandas as pd
+import numpy as np
+from scipy import stats
+import seaborn as sns
+import matplotlib.pyplot as plt
+import tensorflow as tf
+sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+
+
+device_name = tf.test.gpu_device_name()
+# if device_name != '/device:GPU:0':
+#   raise SystemError('GPU device not found')
+# print('Found GPU at: {}'.format(device_name))
+
+pd.options.display.max_columns = 26
+
+
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True

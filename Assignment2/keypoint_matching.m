@@ -9,22 +9,22 @@ image2 = single(imread(image2));
 
 [framesa, da] = vl_sift(single(image1)) ;
 [framesb, db] = vl_sift(single(image2)) ;
-[matches, scores] = vl_ubcmatch(da, db) ;
+[matches, scores] = vl_ubcmatch(da, db,0.5) ;
 background_index = [];
 
 
-for i = 1:size(matches,2)
-	index1 = matches(:,i);
- 	x_first_set=floor(framesa(1:2,index1(1)));
- 	x_second_set=floor(framesb(1:2,index1(2)));
+% for i = 1:size(matches,2)
+% 	index1 = matches(:,i);
+%  	x_first_set=floor(framesa(1:2,index1(1)));
+%  	x_second_set=floor(framesb(1:2,index1(2)));
 
- 	if image1(fix(x_first_set(2)),fix(x_first_set(1))) < 20 | image2(fix(x_second_set(2)),fix(x_second_set(1))) < 20
- 		background_index = [background_index  i];
- 	end
-end
+%  	if image1(fix(x_first_set(2)),fix(x_first_set(1))) < 30 | image2(fix(x_second_set(2)),fix(x_second_set(1))) < 30
+%  		background_index = [background_index  i];
+%  	end
+% end
 
-matches(:,background_index) = [];
-scores(background_index) = [];
+% matches(:,background_index) = [];
+% scores(background_index) = [];
 
 % matches
 [~, perm] = sort(scores, 'descend') ;

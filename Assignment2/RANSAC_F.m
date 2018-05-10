@@ -1,6 +1,6 @@
 function [best_F,best_first, best_second] = RANSAC_F(image1,image2)
-    best_score = 0 
-    best_F = []
+    best_score = 0;
+    best_F = [];
 
 
     for iter = 1:100
@@ -17,7 +17,7 @@ function [best_F,best_first, best_second] = RANSAC_F(image1,image2)
         d = sampson_distance(first_image_points, second_image_points, candidate_F);
         
         inliers = sum(abs(d) < 1.25);
-        disp(inliers)
+        
         if best_score < inliers
         	best_F = candidate_F;
         	best_score = inliers;
