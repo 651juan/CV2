@@ -1,16 +1,16 @@
 function [PVM] = chaining
 
 	imagefiles = dir('/home/yiangos/UvA/CV2/assignment/CV2/Assignment2/Data/House/House/*.png');  
-	PVM = []
+	PVM = [];
 	
-	for i = 1:10
+	for i = 1:length(imagefiles)
 
 		image1_path = strcat(imagefiles(1).folder,'/',imagefiles(i).name);
 
 		if i ~= length(imagefiles)
 			image2_path = strcat(imagefiles(1).folder,'/',imagefiles(i+1).name);
 		else
-			image2_path = strcat(imagefiles(1).folder,'/',imagefiles(i).name);
+			image2_path = strcat(imagefiles(1).folder,'/',imagefiles(1).name);
 		end
 
 		% image1 = imread(image1_path);
@@ -31,28 +31,29 @@ function [PVM] = chaining
 		else
 			last_image_point = PVM(end-1:end,:);
 			% [~,indexes] = ismembertol([x_first; y_first]',last_image_point','ByRows',true);
-			[~,indexes] = ismember([x_first; y_first]',last_image_point','rows');	
-			last_row_index = size(PVM,1);
-			PVM(last_row_index+1,:) = zeros(1,size(PVM,2));
-			PVM(last_row_index+2,:) = zeros(1,size(PVM,2));
+
+			[~,indexes] = ismembertol(round([x_first; y_first])',round(last_image_point)',0.01,'ByRows',true);	
+			% indexes			
+			PVM(end+1:end+2,:) = zeros(2,size(PVM,2));
 
 			for j = 1:length(indexes)
+				% last_column_index = size(PVM,2);
 				if (indexes(j) ~= 0)
-					PVM(last_row_index+1,j) = x_second(indexes(j));
-					PVM(last_row_index+2,j) = y_second(indexes(j));
+					PVM(end-1:end,indexes(j)) = [x_second(j) ; y_second(j)];
+					% y_second(indexes(j))
+			% 	% If new point appears
 				else
-					PVM(:,length(indexes)+1) = zeros(size(PVM,1),1);
-					PVM(last_row_index,end-1) = x_first(j);
-					PVM(last_row_index,end) = y_first(j);
-					PVM(last_row_index+1,j) = x_second(indexes(j));
-					PVM(last_row_index+1,j) = y_second(indexes(j));
+					PVM(:,end+1) = zeros(size(PVM,1),1);
+					PVM(end-3,end) = x_first(j);
+					PVM(end-2,end) = y_first(j);
+					PVM(end-1:end,end) = [x_second(j) ; y_second(j)];
 				end
-
 			end
+			% PVM
+			% end
 			% [x_first; y_first];
 			% last_image_point;
-            PVM
 		end
 	end
-
+	PVM
 end

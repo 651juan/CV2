@@ -7,8 +7,13 @@ end
 image1 = single(imread(image1));
 image2 = single(imread(image2));
 
+image1 = remove_background(image1);
+image2 = remove_background(image2);
+
 [framesa, da] = vl_sift(single(image1)) ;
 [framesb, db] = vl_sift(single(image2)) ;
+
+
 [matches, scores] = vl_ubcmatch(da, db,0.5) ;
 background_index = [];
 
@@ -31,8 +36,8 @@ background_index = [];
 matches = matches(:, perm) ;
 scores  = scores(perm) ;
 
-% matches = matches(:,1:showNumberOfPoints);
-% scores = scores(1:showNumberOfPoints);
+% matches = matches(:,1:200);
+% scores = scores(1:200);
 
 end
 
