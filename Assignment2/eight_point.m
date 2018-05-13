@@ -1,6 +1,8 @@
-function [F] = eight_point(first_image_points, second_image_points,norm)
+function [F,first_image_points,second_image_points] = eight_point(first_image_points, second_image_points,first_points,second_points,norm,inliers)
 
     if (norm == 1)
+       f1_ = first_image_points;
+       f2_ = second_image_points;
        [T1, first_image_points] = get_normalise_matrix(first_image_points);
        [T2, second_image_points] = get_normalise_matrix(second_image_points);
     end
@@ -30,7 +32,19 @@ function [F] = eight_point(first_image_points, second_image_points,norm)
     
     if (norm == 1)
         F = T2'*F*T1;
+        if ~inliers
+            first_image_points = f1_;
+            second_image_points = f2_;
+        end
+    end
+
+    if inliers == 1
+        d = sampson_distance(first_points, second_points, F);
+        index_inlier = abs(d) < 1.25;
+        first_image_points = first_points(:,index_inlier);
+        second_image_points = second_points(:,index_inlier);
     end
 
 end
+
 

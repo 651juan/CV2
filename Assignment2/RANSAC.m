@@ -1,5 +1,6 @@
 function [best_fit, first_image_points, ransac_points] = RANSAC(Im1,Im2,P,plot_)
 
+
 	[f1,f2,matches,scores] = keypoint_matching(Im1,Im2);
 	
 	

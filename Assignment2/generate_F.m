@@ -1,9 +1,9 @@
-function F = generate_F(F_method,plot)
+function [F,first_image_points,second_image_points] = generate_F(F_method,plot,im_1,im_2)
 
 %% Read images
 imagefiles = dir('/home/yiangos/UvA/CV2/assignment/CV2/Assignment2/Data/House/House/*.png');  
-image1_path = strcat(imagefiles(1).folder,'/',imagefiles(5).name);
-image2_path = strcat(imagefiles(1).folder,'/',imagefiles(6).name);
+image1_path = strcat(imagefiles(1).folder,'/',imagefiles(im_1).name);
+image2_path = strcat(imagefiles(1).folder,'/',imagefiles(im_2).name);
 image1 = imread(image1_path);
 image2 = imread(image2_path);
 
@@ -12,22 +12,32 @@ if F_method == 1 | F_method == 2
 	
 	[best_fit first_image_points, second_image_points] = RANSAC(image1_path,image2_path,3,0);
 	% [f1,f2,matches,scores] = keypoint_matching(image1_path,image2_path);
-	index = randperm(size(first_image_points,2),8);
-
 	first_image_points (3,:)=1;
 	second_image_points (3,:)=1;
+	first_points = first_image_points;
+	second_points = second_image_points;
+
+	% 8 Random Points
+	index = randperm(size(first_image_points,2),8);
+
 	first_image_points = first_image_points(1:3,index);
 	second_image_points = second_image_points(1:3,index);
-	size(second_image_points)
+	% size(second_image_points);
 	%% Eight Point Algorithm
 	if F_method == 1
-		F = eight_point(first_image_points, second_image_points, 0);
+		[F,first_image_points,second_image_points] = eight_point(first_image_points,second_image_points,first_points,second_points , 0,0);
 	else
-		F = eight_point(first_image_points, second_image_points, 1);
+		[F,first_image_points,second_image_points] = eight_point(first_image_points,second_image_points,first_points,second_points, 1,0);
 	end
 
 elseif F_method == 3
 	[F,first_image_points, second_image_points] = RANSAC_F(image1_path,image2_path);
+	
+	% index = randperm(size(first_image_points,2),8);
+
+	% first_image_points = first_image_points(1:3,index);
+	% second_image_points = second_image_points(1:3,index);
+
 end
 		
 

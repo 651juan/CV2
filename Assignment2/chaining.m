@@ -4,19 +4,19 @@ function [PVM] = chaining
 	PVM = [];
 	
 	for i = 1:length(imagefiles)
-
-		image1_path = strcat(imagefiles(1).folder,'/',imagefiles(i).name);
-
+		i
+		% image1_path = strcat(imagefiles(1).folder,'/',imagefiles(i).name);
+		image_number1 = i;
 		if i ~= length(imagefiles)
-			image2_path = strcat(imagefiles(1).folder,'/',imagefiles(i+1).name);
+			% image2_path = strcat(imagefiles(1).folder,'/',imagefiles(i+1).name);
+			image_number2 = i+1;
 		else
-			image2_path = strcat(imagefiles(1).folder,'/',imagefiles(1).name);
+			% image2_path = strcat(imagefiles(1).folder,'/',imagefiles(1).name);
+			image_number2 = 1;
 		end
 
-		% image1 = imread(image1_path);
-		% image2 = imread(image2_path);
-
-		[best_fit, first_image_points, second_image_points] = RANSAC(image2_path,image2_path,3,0);
+		
+		[F,first_image_points,second_image_points] = generate_F(3,0,image_number1,image_number2);
 
 		x_first = first_image_points(1,:);
 		y_first = first_image_points(2,:);
@@ -32,7 +32,7 @@ function [PVM] = chaining
 			last_image_point = PVM(end-1:end,:);
 			% [~,indexes] = ismembertol([x_first; y_first]',last_image_point','ByRows',true);
 
-			[~,indexes] = ismembertol(round([x_first; y_first])',round(last_image_point)',0.01,'ByRows',true);	
+			[~,indexes] = ismembertol(round([x_first; y_first])',round(last_image_point)',0.005,'ByRows',true);	
 			% indexes			
 			PVM(end+1:end+2,:) = zeros(2,size(PVM,2));
 
@@ -49,11 +49,6 @@ function [PVM] = chaining
 					PVM(end-1:end,end) = [x_second(j) ; y_second(j)];
 				end
 			end
-			% PVM
-			% end
-			% [x_first; y_first];
-			% last_image_point;
 		end
 	end
-	PVM
 end
