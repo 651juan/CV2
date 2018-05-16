@@ -1,20 +1,20 @@
-function [M,S] = SfM(start,end_point,plot,PVM) 
+function [M,S,indices_not_removed] = SfM(start,end_point,plot,PVM) 
     
 	D=PVM(start:end_point,:);
     indices_removed = any(D'==0,2);
     indices_not_removed = find(~indices_removed);
+    
     indices_removed = find(indices_removed);
     
-	D(:,any(D'==0,2)) = [];    
+	D(:,any(D'==0,2)) = [];
+    %D(:,204:end) = [];
     
-    for i = 1:size(indices_removed,2)
-        [rows, row_scores] = get_row_scores(PVM, end_point);
-        [column, column_scores] = get_column_scores(PVM, indices_removed);
-        [row_val, row_idx] = max(row_scores);
-        [col_val, column_idx] = max(column_scores);
-        
-        
-    end
+%     for i = 1:size(indices_removed,2)
+% %         [rows, row_scores] = get_row_scores(PVM, end_point);
+% %         [column, column_scores] = get_column_scores(PVM, indices_removed);
+% %         [row_val, row_idx] = max(row_scores);
+% %         [col_val, column_idx] = max(column_scores);
+%     end
     
 	mean_D = mean(D,2);
 	D = D - mean_D;
