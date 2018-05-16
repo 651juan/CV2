@@ -3,10 +3,9 @@ function  SfM(size_consecutive_images,plot,PVM)
 % 	PVM = chaining();
 
 
-	% Xs = PVM(1:2:end,:);
-  	% Ys = PVM(2:2:end,:); 
- 	% D = [Xs; Ys]; 
 
+% for i = 1:2:size(PMV,1)
+	
 	D=PVM(1:size_consecutive_images,:);
 	size(D)
 	D(:,any(D'==0,2)) = [];
@@ -24,23 +23,23 @@ function  SfM(size_consecutive_images,plot,PVM)
 	M = U * sqrt(S);
 	S = sqrt(S) * V;
 
+% end
 	
-	
-	% A = []
-	% B = []
-	% for i=1:2:size(M,1)
-	% 	x_i = M(i,:);
-	% 	y_i = M(i+1,:);
-	% 	Motion_matrix = [x_i.*x_i ; y_i.*y_i; x_i.*y_i];
-	% 	A = [A ; Motion_matrix];
-	% 	B = [B ; (inv(Motion_matrix)')];
-	% end
-	% x = Motion_matrix \ (inv(Motion_matrix)')
+	A = []
+	B = []
+	for i=1:2:size(M,1)
+		x_i = M(i,:);
+		y_i = M(i+1,:);
+		Motion_matrix = [x_i ; y_i;];
+		A = [A ; Motion_matrix];
+		B = [B ; (pinv(Motion_matrix)')];
+	end
+	x = A \ B
 
-	% [C,p] = chol(x)
+	[C,p] = chol(x)
 	
-	% M = M * C;
- %    S  = C' \ S ;
+	M = M * C;
+    S  = C' \ S ;
 
  	scatter3(S(1,:),S(2,:),S(3,:),'filled');
 %     scatter3(M(:,1)',M(:,2)',M(:,3)');

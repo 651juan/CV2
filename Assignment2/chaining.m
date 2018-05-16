@@ -32,7 +32,7 @@ function [PVM] = chaining
 			last_image_point = PVM(end-1:end,:);
 			% [~,indexes] = ismembertol([x_first; y_first]',last_image_point','ByRows',true);
 
-			[~,indexes] = ismembertol(round([x_first; y_first])',round(last_image_point)',0.005,'ByRows',true);	
+			[~,indexes] = ismembertol([x_first; y_first]',last_image_point',0.01,'ByRows',true);	
 			% indexes			
 			PVM(end+1:end+2,:) = zeros(2,size(PVM,2));
 
