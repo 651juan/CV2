@@ -27,6 +27,25 @@ function [M,S,indices_not_removed] = SfM(start,end_point,plot,PVM)
 
 	M = U * sqrt(S);
 	S = sqrt(S) * V;
+
+% end
+	
+	A = []
+	B = []
+	for i=1:2:size(M,1)
+		x_i = M(i,:);
+		y_i = M(i+1,:);
+		Motion_matrix = [x_i ; y_i;];
+		A = [A ; Motion_matrix];
+		B = [B ; (pinv(Motion_matrix)')];
+	end
+	x = A \ B
+
+	[C,p] = chol(x)
+	
+	M = M * C;
+    S  = C' \ S ;
+
     
 	
  	%scatter3(S(1,:),S(2,:),S(3,:),'filled');
@@ -49,6 +68,7 @@ function [M,S,indices_not_removed] = SfM(start,end_point,plot,PVM)
 	% M = M * C;
  %    S  = C' \ S ;       
 end
+
 
 function [rows,row_score] = get_row_scores(current_PVM, end_point)
     rows = current_PVM(end_point:end,:);
