@@ -1,6 +1,6 @@
 function [PVM] = chaining
 
-	imagefiles = dir('/home/juan/Documents/Uva/CV2/git/CV2/Assignment2/Data/House/House/*.png');  
+	imagefiles = dir('Data/House/House/*.png');  
 	PVM = [];
 	
 	for i = 1:length(imagefiles)
