@@ -8,14 +8,14 @@ image1 = imread(image1);
 image2 = imread(image2);
 
 
-image1 = remove_background(image1);
-image2 = remove_background(image2);
+image1 = remove_background(image1,1);
+image2 = remove_background(image2,1);
 
 [framesa, da] = vl_sift(single(image1)) ;
 [framesb, db] = vl_sift(single(image2)) ;
 
 
-[matches, scores] = vl_ubcmatch(da, db) ;
+[matches, scores] = vl_ubcmatch(da, db,1) ;
 background_index = [];
 
 
@@ -33,9 +33,9 @@ matches(:,background_index) = [];
 scores(background_index) = [];
 
 % matches
-[~, perm] = sort(scores, 'descend') ;
-matches = matches(:, perm) ;
-scores  = scores(perm) ;
+[~, perm] = sort(scores, 'descend');
+matches = matches(:, perm);
+scores  = scores(perm);
 
 % matches = matches(:,1:200);
 % scores = scores(1:200);

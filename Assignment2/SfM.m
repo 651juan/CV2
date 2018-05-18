@@ -6,7 +6,7 @@ function [M,S,indices_not_removed] = SfM(start,end_point,plot,PVM)
     
     indices_removed = find(indices_removed);
     
-	D(:,any(D'==0,2)) = [];
+	D(:,indices_removed) = [];
     %D(:,204:end) = [];
     
 %     for i = 1:size(indices_removed,2)
@@ -29,9 +29,9 @@ function [M,S,indices_not_removed] = SfM(start,end_point,plot,PVM)
 	S = sqrt(S) * V;
 
 % end
-	
-	A = []
-	B = []
+	% eliminate_affine_ambiguity
+	A = [];
+	B = [];
 	for i=1:2:size(M,1)
 		x_i = M(i,:);
 		y_i = M(i+1,:);
@@ -39,9 +39,9 @@ function [M,S,indices_not_removed] = SfM(start,end_point,plot,PVM)
 		A = [A ; Motion_matrix];
 		B = [B ; (pinv(Motion_matrix)')];
 	end
-	x = A \ B
+	x = A \ B;
 
-	[C,p] = chol(x)
+	[C,p] = chol(x);
 	
 	M = M * C;
     S  = C' \ S ;

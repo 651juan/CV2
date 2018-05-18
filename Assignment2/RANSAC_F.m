@@ -24,12 +24,12 @@ function [best_F,best_first, best_second] = RANSAC_F(image1,image2)
         
         d = sampson_distance(first_points, second_points, candidate_F);
         
-        inliers = sum(abs(d) < 1.25);
+        inliers = sum(abs(d) <= 1.25);
 
         if best_score < inliers
         	best_F = candidate_F;
         	best_score = inliers
-            index_inlier = abs(d) < 1.25;
+            index_inlier = abs(d) <= 1.25;
         	best_first = first_points(:,index_inlier);
         	best_second = second_points(:,index_inlier);
             if inliers == length(matches)
