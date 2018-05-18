@@ -1,6 +1,7 @@
 function [F,first_image_points,second_image_points] = generate_F(F_method,plot,im_1,im_2)
 
 %% Read images
+<<<<<<< HEAD
 % imagefiles = dir('/home/juan/Documents/Uva/CV2/git/CV2/Assignment2/Data/House/House/*.png');
 imagefiles = dir('Data/House/House/*.png');  
   
